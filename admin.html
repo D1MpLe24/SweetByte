@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Byte — Панель Администратора</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f4f5f7; color: #3E2723; padding: 40px; }
+        
+        .header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .back-link { text-decoration: none; color: #3E2723; font-weight: 700; background: #fff; padding: 10px 18px; border-radius: 12px; border: 1px solid #ddd; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .stat-card h4 { font-size: 13px; color: #7D6B68; margin-bottom: 8px; }
+        .stat-card .num { font-size: 28px; font-weight: 800; }
+
+        .table-container { background: #fff; padding: 24px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .table-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .clear-btn { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .clear-btn:hover { background: #ffcdd2; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { font-weight: 700; color: #7D6B68; }
+
+        .status-button { color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; border: none; display: inline-block; }
+        
+        /* Цвета статусов */
+        .status-1 { background-color: #ff9800; } /* Принят */
+        .status-2 { background-color: #2196f3; } /* Готовится */
+        .status-3 { background-color: #9c27b0; } /* В доставке */
+        .status-4 { background-color: #4caf50; } /* Доставлен */
+
+        .action-btn { background: none; border: 1px solid #ccc; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .delete-btn { background: #ffebee; border-color: #ef9a9a; color: #c62828; }
+        .delete-btn:hover { background: #ffcdd2; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+        .modal-content { background: #fff; width: 350px; margin: 100px auto; padding: 24px; border-radius: 20px; position: relative; }
+        .status-close { position: absolute; top: 16px; right: 16px; cursor: pointer; border: none; background: none; font-weight: 700; }
+        select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; margin: 16px 0; font-size: 14px; }
+        .save-btn { width: 100%; background: #3E2723; color: #fff; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+    </style>
+    <script>
+        (function checkAdminAccess() {
+            const ADMIN_PASSWORD = "admin";
+            const pass = prompt("Введите пароль администратора:");
+            if (pass !== ADMIN_PASSWORD) {
+                alert("Доступ запрещен!");
+                window.location.href = "index.html";
+            }
+        })();
+    </script>
+</head>
+<body class="admin-page">
+
+    <div class="header-admin">
+        <h1>⚙️ Панель управления заказами</h1>
+        <a href="index.html" class="back-link">← Вернуться в магазин</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card"><h4>Всего заказов</h4><div class="num" id="total-orders">0</div></div>
+        <div class="stat-card"><h4>Новые</h4><div class="num" id="new-orders">0</div></div>
+        <div class="stat-card"><h4>В работе</h4><div class="num" id="processing-orders">0</div></div>
+        <div class="stat-card"><h4>Завершено</h4><div class="num" id="completed-orders">0</div></div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header-actions">
+            <h3>Список заказов</h3>
+            <button id="clear-completed-btn" class="clear-btn">🧹 Очистить все доставленные</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Детали заказа</th>
+                    <th>Клиент</th>
+                    <th>Телефон</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list"></tbody>
+        </table>
+    </div>
+
+    <div id="status-modal" class="modal">
+        <div class="modal-content">
+            <button class="status-close">✕</button>
+            <h3>Заказ №<span id="modal-order-id"></span></h3>
+            <form id="status-update-form">
+                <input type="hidden" id="current-order-id">
+                <select id="new-status-select">
+                    <option value="1">Принят</option>
+                    <option value="2">Готовится</option>
+                    <option value="3">В доставке</option>
+                </select>
+                <button type="submit" class="save-btn">Сохранить статус</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

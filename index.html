@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Byte — Магазин сладостей</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-cream: #FFFEEA;
+            --bg-white: #FFFFFF;
+            --accent-pink: #F8C3D3;
+            --accent-pink-hover: #f3adc2;
+            --accent-mint: #B2FBA5;
+            --text-dark: #3E2723;
+            --text-muted: #7D6B68;
+            --card-pink-btn: #FCD8E4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-cream); color: var(--text-dark); }
+
+        .top-wrapper { padding: 20px 80px 60px 80px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+        .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px; text-decoration: none; color: var(--text-dark); }
+        .logo-icon { color: #e27d9c; }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 15px; transition: opacity 0.2s; }
+        .nav-links a:hover { opacity: 0.7; }
+
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { background: #ffffff; border: 1px solid #ebd8c3; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; text-decoration: none; color: inherit; }
+        .icon-btn:hover { transform: scale(1.05); }
+
+        .cart-wrapper { position: relative; }
+        .cart-counter { position: absolute; top: -4px; right: -4px; background: #b2fba5; color: var(--text-dark); font-weight: 700; font-size: 12px; min-width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; padding: 0 4px; }
+
+        .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-top: 40px; }
+        .badge { background: #B2FBA5; display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 20px; }
+        .hero-title { font-size: 52px; line-height: 1.15; font-weight: 800; margin-bottom: 16px; }
+        .hero-subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 28px; }
+        
+        .btn { border: none; padding: 14px 28px; border-radius: 24px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-primary { background: var(--accent-pink); color: var(--text-dark); }
+        .btn-primary:hover { background: var(--accent-pink-hover); transform: translateY(-2px); }
+
+        .hero-image-container { position: relative; }
+        .badge-float { position: absolute; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.9); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; backdrop-filter: blur(4px); z-index: 2; }
+        .hero-img { width: 100%; height: 380px; object-fit: cover; border-radius: 32px; box-shadow: 0 16px 32px rgba(62, 39, 35, 0.08); }
+
+        .categories { margin-top: 60px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .section-header h2 { font-size: 28px; font-weight: 800; }
+        .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .category-card { background: var(--accent-mint); padding: 20px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.2s; }
+        .category-card:hover { transform: translateY(-3px); }
+        .category-info h3 { font-size: 18px; margin-bottom: 4px; }
+        .category-info p { font-size: 12px; color: #4b6844; }
+        .category-card img { width: 65px; height: 65px; object-fit: cover; border-radius: 50%; }
+
+        .products-section { background: var(--bg-white); padding: 60px 80px; }
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .product-card { background: #FAFAFA; border-radius: 24px; padding: 16px; transition: box-shadow 0.2s, transform 0.2s; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+        .product-img-wrap { width: 100%; height: 190px; overflow: hidden; border-radius: 16px; margin-bottom: 16px; }
+        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .product-details h3 { font-size: 16px; margin-bottom: 12px; }
+        .product-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .product-price { font-weight: 800; font-size: 16px; }
+        
+        .add-to-cart-btn { background: var(--card-pink-btn); border: none; padding: 8px 16px; border-radius: 16px; font-weight: 700; color: var(--text-dark); cursor: pointer; transition: background 0.2s; }
+        .add-to-cart-btn:hover { background: #f1b9cc; }
+
+        /* Toast-уведомления */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3E2723;
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            border-left: 4px solid #B2FBA5;
+        }
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Модальные окна */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; }
+        .modal-content { background: #fff; width: 90%; max-width: 500px; margin: 80px auto; padding: 28px; border-radius: 24px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .close-button, .checkout-close, .track-close { position: absolute; top: 20px; right: 20px; font-size: 22px; cursor: pointer; background: none; border: none; font-weight: 700; color: var(--text-muted); }
+        
+        .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .cart-qty-btn { background: var(--card-pink-btn); border: none; width: 26px; height: 26px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .remove-item-btn { background: #ffeded; border: none; color: #d32f2f; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .cart-footer-summary { margin-top: 20px; text-align: right; font-weight: 800; font-size: 18px; }
+        .checkout-button { width: 100%; margin-top: 16px; background: var(--accent-pink); border: none; padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; outline: none; }
+        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; font-size: 14px; }
+
+        .order-tracker { margin-top: 16px; }
+        .tracker-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; opacity: 0.4; }
+        .tracker-item.active { opacity: 1; font-weight: 700; }
+        .tracker-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--text-dark); }
+
+        .footer { background: #2C1A17; color: #ffffff; padding: 60px 80px 20px 80px; margin-top: 60px; }
+        .footer-container { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-brand p { color: #b5a3a0; margin-top: 12px; }
+        .footer-col p, .footer-col a { color: #b5a3a0; text-decoration: none; display: block; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-wrapper">
+        <header class="header">
+            <a href="#" class="logo">
+                <span class="logo-icon">✦</span>
+                <span class="logo-text">Sweet Byte</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#catalog">Каталог</a>
+                <a href="#popular">Наборы</a>
+                <a href="#" class="track-order-link">Отследить заказ 📦</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="cart-wrapper">
+                    <button class="icon-btn cart-icon" title="Корзина">🛒</button>
+                    <span class="cart-counter">0</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">✦ МАЛЕНЬКАЯ РАДОСТЬ С ДОСТАВКОЙ</div>
+                <h1 class="hero-title">Сладости, которые поднимают настроение</h1>
+                <p class="hero-subtitle">Японские моти, авторские пончики и подарочные наборы ручной работы.</p>
+                <a href="#popular" class="btn btn-primary">Выбрать сладости ↗</a>
+            </div>
+            <div class="hero-image-container">
+                <span class="badge-float">✦ Свежие каждый день</span>
+                <img src="images/photo1.jpg" alt="Сладости" class="hero-img">
+            </div>
+        </section>
+
+        <section class="categories" id="catalog">
+            <div class="section-header">
+                <h2>Категории</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card" data-category="candy">
+                    <div class="category-info"><h3>Конфеты</h3><p>Яркие и фруктовые</p></div>
+                    <img src="images/photo2.jpg" alt="Конфеты">
+                </div>
+                <div class="category-card" data-category="mochi">
+                    <div class="category-info"><h3>Моти</h3><p>Нежные и кремовые</p></div>
+                    <img src="images/photo3.jpg" alt="Моти">
+                </div>
+                <div class="category-card" data-category="donuts">
+                    <div class="category-info"><h3>Пончики</h3><p>Глазированный восторг</p></div>
+                    <img src="images/photo4.jpg" alt="Пончики">
+                </div>
+                <div class="category-card" data-category="drinks">
+                    <div class="category-info"><h3>Напитки</h3><p>Освежающие миксы</p></div>
+                    <img src="images/photo5.jpg" alt="Напитки">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="products-section" id="popular">
+        <div class="section-header">
+            <h2>Популярные десерты</h2>
+        </div>
+
+        <div class="products-grid">
+            <div class="product-card" data-category="mochi" data-title="Моти «Ягодное облако»" data-price="1100">
+                <div class="product-img-wrap">
+                    <img src="images/photo6.jpg" alt="Моти">
+                </div>
+                <div class="product-details">
+                    <h3>Моти «Ягодное облако»</h3>
+                    <div class="product-bottom">
+                        <span class="product-price">1 100 ₸</span>
+                        <button class="add-to-cart-btn">В корзину</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="donuts" data-title="Пончик «Клубничный»" data-price="1200">
+                <div class="product-img-wrap">
+                    <img src="images/photo7.jpg" alt="Пончик">
+                </div>
+                <div class="product-details">
+                    <h3>Пончик «Клубничный»</h3>
+                    <div class="product-bottom">
+                        <span class="product-price">1 200 ₸</span>
+                        <button class="add-to-cart-btn">В корзину</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="candy" data-title="Персиковый мармелад" data-price="1600">
+                <div class="product-img-wrap">
+                    <img src="images/photo8.jpg" alt="Мармелад">
+                </div>
+                <div class="product-details">
+                    <h3>Персиковый мармелад</h3>
+                    <div class="product-bottom">
+                        <span class="product-price">1 600 ₸</span>
+                        <button class="add-to-cart-btn">В корзину</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="mochi" data-title="Праздничный сет" data-price="5800">
+                <div class="product-img-wrap">
+                    <img src="images/photo9.jpg" alt="Праздничный сет">
+                </div>
+                <div class="product-details">
+                    <h3>Праздничный сет</h3>
+                    <div class="product-bottom">
+                        <span class="product-price">5 800 ₸</span>
+                        <button class="add-to-cart-btn">В корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно КОРЗИНЫ -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button">✕</button>
+            <h2 style="margin-bottom: 16px;">Ваша корзина</h2>
+            <div id="cart-items-list"></div>
+            <div class="cart-footer-summary">
+                Итого: <span id="cart-total-amount">0 ₸</span>
+            </div>
+            <button class="checkout-button">Оформить заказ ↗</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно ОФОРМЛЕНИЯ ЗАКАЗА -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <button class="checkout-close">✕</button>
+            <h2 style="margin-bottom: 16px;">Оформление заказа</h2>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="user-name" required placeholder="Марина">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="user-phone" required placeholder="+7 700 000 0000">
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="user-address" required placeholder="Улица, дом, квартира">
+                </div>
+                <div class="form-group">
+                    <label>Способ оплаты</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="payment-method" value="cash" checked> Наличными/переводом курьеру</label>
+                        <label><input type="radio" name="payment-method" value="card-online"> Онлайн картой / Kaspi</label>
+                        <label><input type="radio" name="payment-method" value="card-delivery"> Картой курьеру</label>
+                    </div>
+                </div>
+                <div style="margin-top: 16px; font-weight: 700;">К оплате: <span id="checkout-total-amount">0 ₸</span></div>
+                <button type="submit" class="checkout-button" style="margin-top: 12px;">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно ТРЕКЕРА ЗАКАЗА -->
+    <div id="track-modal" class="modal">
+        <div class="modal-content">
+            <button class="track-close">✕</button>
+            <h2 style="margin-bottom: 16px;">Отследить заказ</h2>
+            <form id="track-form">
+                <div class="form-group">
+                    <label>Введите номер заказа (например: 1001)</label>
+                    <input type="text" id="order-id-input" required placeholder="1001">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 12px;">Проверить статус</button>
+            </form>
+            <div id="tracking-info" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Уведомления Toast -->
+    <div id="toast" class="toast-notification"></div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo" style="color: #fff;"><span>Sweet Byte ✦</span></div>
+                <p>Маленькие радости, большие эмоции.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <p>sweetbyte@gmail.com</p>
+                <p>+7 (777) 000-00-00</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
